@@ -1,2 +1,5 @@
+***Alpha v0.2b***
+-performance improvments (better scrolling)
+-added PROBE for performance checking
 ***Alpha v0.2a***
 - basic inventory (controllable with mouse, mouse wheel and keyboard)

@@ -9,6 +9,24 @@ require "map"
 require "player"
 require "inventory"
 require "lib/camera2"
+PROBE = require 'PROBE'
+
+-- Profiler for drawing operations (set up in love.load()) with a sliding
+-- window size of 60 cycles. Too few cycles and the visualization will be too
+-- jittery to be legible; too many cycles and the visualization will lag
+-- behind. 60-ish cycles is a good compromise between smoothness and
+-- responsiveness.
+dProbe = PROBE.new(60)
+
+-- profiler for update operations (set up in love.load())
+uProbe = PROBE.new(60)
+dProbe:hookAll(_G, 'draw', {love})
+	-- Same deal to profile update operations.
+	uProbe:hookAll(_G, 'update', {love})
+	dProbe:enable(true)
+	uProbe:enable(true)
+
+
 cWorld = nil
 camera = {}
 local coll = {}
@@ -30,15 +48,19 @@ function state_play:enter()
 	for i, v in ipairs(coll) do
 		cWorld:add(v, v.x, v.y, v.w, v.h)
 	end	
+
 end
 
 function state_play:update(dt)
+	uProbe:startCycle()
 	camera:update(dt)
 	flux.update(dt)
 	player.update(dt)
+	uProbe:endCycle()
 end
 
 function state_play:draw()
+	dProbe:startCycle()
 	camera:attach()
 	map.draw()
 	player.draw()
@@ -46,6 +68,11 @@ function state_play:draw()
 	cam2:set()
 	inventory.draw()
 	cam2:unset()
+	dProbe:endCycle()
+
+	love.graphics.setColor(255, 255, 255)
+	dProbe:draw(20, 20, 150, 560, "DRAW CYCLE")
+	uProbe:draw(630, 20, 150, 560, "UPDATE CYCLE")
 end
 
 function state_play:keypressed(key)

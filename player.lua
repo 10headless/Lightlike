@@ -16,6 +16,8 @@ function player.load(X, Y)
 	player.yvel = 0
 	player.speed = 750
 	player.friction = 6
+	player.tx = 1
+	player.ty = 1
 	cWorld:add(player, player.x, player.y, player.w, player.h)
 	inventory.load()
 end
@@ -28,7 +30,8 @@ end
 
 function player.update(dt)
 	
-
+	player.tx = math.floor(player.x/32)
+	player.ty = math.floor(player.y/32)
 
 	if love.keyboard.isDown("a") then
 		player.xvel = player.xvel - player.speed*dt
