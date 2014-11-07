@@ -1,4 +1,5 @@
 require "lovenames"
+require "inventory"
 
 player = {}
 
@@ -16,6 +17,7 @@ function player.load(X, Y)
 	player.speed = 750
 	player.friction = 6
 	cWorld:add(player, player.x, player.y, player.w, player.h)
+	inventory.load()
 end
 
 function player.draw()

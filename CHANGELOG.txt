@@ -1,0 +1,2 @@
+***Alpha v0.2a***
+- basic inventory (controllable with mouse, mouse wheel and keyboard)
