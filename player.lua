@@ -125,8 +125,28 @@ end
 function player.kpressed(key)
 	if key == "r" then
 		if equip[equipped].wAtr.ammoWithMe >= equip[equipped].wAtr.maxAmmo then
-			equip[equipped].wAtr.ammoWithMe = equip[equipped].wAtr.ammoWithMe - equip[equipped].wAtr.maxAmmo
-			equip[equipped].wAtr.ammo = equip[equipped].wAtr.maxAmmo
+			if equip[equipped].wAtr.ammo > 0 then
+				local tmp = equip[equipped].wAtr.maxAmmo - equip[equipped].wAtr.ammo
+				equip[equipped].wAtr.ammo = equip[equipped].wAtr.maxAmmo
+				equip[equipped].wAtr.ammoWithMe = equip[equipped].wAtr.ammoWithMe - tmp
+			else
+				equip[equipped].wAtr.ammoWithMe = equip[equipped].wAtr.ammoWithMe - equip[equipped].wAtr.maxAmmo
+				equip[equipped].wAtr.ammo = equip[equipped].wAtr.maxAmmo
+			end
+		else
+			if equip[equipped].wAtr.ammo > 0 then
+				local tmp = equip[equipped].wAtr.maxAmmo - equip[equipped].wAtr.ammo
+				if tmp > equip[equipped].wAtr.ammoWithMe then
+					equip[equipped].wAtr.ammo = equip[equipped].wAtr.maxAmmo
+					equip[equipped].wAtr.ammoWithMe = equip[equipped].wAtr.ammoWithMe - tmp
+				else
+					equip[equipped].wAtr.ammo = equip[equipped].wAtr.ammoWithMe
+					equip[equipped].wAtr.ammoWithMe = 0
+				end
+			else
+				equip[equipped].wAtr.ammo = equip[equipped].wAtr.ammoWithMe
+				equip[equipped].wAtr.ammoWithMe = 0
+			end
 		end
 	end	
 end

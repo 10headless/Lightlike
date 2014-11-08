@@ -1,3 +1,5 @@
+***Alpha v0.3b***
+-better reloading system (actually takes into consideration what's in the weapon
 ***Alpha v0.3a***
 -very very basic shooting mechanics
 ***Alpha v0.2b***
