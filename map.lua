@@ -18,9 +18,9 @@ roomMinWidth = 8
 
 function map.draw()
 	for i, v in ipairs(curMap) do
-		if player.tx-12 < i and i < player.tx+12 then
+		if player.tx-20 < i and i < player.tx+20 then
 			for j, b in ipairs(v) do
-				if player.ty-12 < j and j < player.ty+12 then
+				if player.ty-20 < j and j < player.ty+20 then
 					if b.char == 0 then
 						lg.setColor(200, 0, 0)
 						lg.rectangle("fill", blockSize*(i-1), blockSize*(j-1), blockSize, blockSize)

@@ -1,6 +1,7 @@
 require "lovenames"
 require "inventory"
-
+local vector = require "lib/vector"
+require "bullet"
 player = {}
 
 function player.load(X, Y)
@@ -74,4 +75,58 @@ function player.update(dt)
 		
 	end
 	cWorld:move(player, player.x, player.y, player.w, player.h)
+
+
+	if love.mouse.isDown("l") then
+		if equip[equipped].weapon then
+			if equip[equipped].wAtr.ammo > 0 then
+				if equip[equipped].wAtr.bullTime >= equip[equipped].wAtr.maxBullTime then
+					local miwX, miwY = camera:getMousePosition()
+					local difX = miwX-player.x
+					local difY = miwY-player.y
+					local r = love.math.random(1, 3)-2
+					local tmp = math.atan2(math.abs(difY), math.abs(difX))+(love.math.random()*equip[equipped].wAtr.acc*r)
+					local yv = math.sin(tmp)*bullet.speed
+					local xv1 = bullet.speed^2 - yv^2 
+					local xv2 = math.sqrt(xv1) 
+					if difX < 0 then
+						xv2 = -xv2
+					end
+					if difY < 0 then
+						yv = -yv
+					end
+
+					bullet.load(player.x, player.y, xv2, yv)
+					equip[equipped].wAtr.bullTime = 0
+					equip[equipped].wAtr.ammo = equip[equipped].wAtr.ammo - 1
+				else
+					equip[equipped].wAtr.bullTime = equip[equipped].wAtr.bullTime + dt
+				end
+			end
+		end
+	else
+		for i, v in ipairs(equip) do
+			if v.weapon then
+				v.wAtr.bullTime = v.wAtr.maxBullTime
+			end
+		end
+	end
+end
+
+function player.mpressed(key, X, Y)
+	local cax, cay = camera:getScale()
+	local x = X/cax
+	local y = Y/cay
+	if key == "l" then
+		
+	end		
+end
+
+function player.kpressed(key)
+	if key == "r" then
+		if equip[equipped].wAtr.ammoWithMe >= equip[equipped].wAtr.maxAmmo then
+			equip[equipped].wAtr.ammoWithMe = equip[equipped].wAtr.ammoWithMe - equip[equipped].wAtr.maxAmmo
+			equip[equipped].wAtr.ammo = equip[equipped].wAtr.maxAmmo
+		end
+	end	
 end

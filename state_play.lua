@@ -9,6 +9,7 @@ require "map"
 require "player"
 require "inventory"
 require "lib/camera2"
+require "bullet"
 PROBE = require 'PROBE'
 
 -- Profiler for drawing operations (set up in love.load()) with a sliding
@@ -29,9 +30,9 @@ dProbe:hookAll(_G, 'draw', {love})
 
 cWorld = nil
 camera = {}
-local coll = {}
+coll = {}
 local empty = {x = 0, y = 0}
-camera2 = {}
+
 function state_play:enter()
 	empty = {x = 20, y = 20}
 	cWorld = bump.newWorld(32)
@@ -56,6 +57,7 @@ function state_play:update(dt)
 	camera:update(dt)
 	flux.update(dt)
 	player.update(dt)
+	bullet.update(dt)
 	uProbe:endCycle()
 end
 
@@ -63,6 +65,7 @@ function state_play:draw()
 	dProbe:startCycle()
 	camera:attach()
 	map.draw()
+	bullet.draw()
 	player.draw()
 	camera:detach()
 	cam2:set()
@@ -79,9 +82,9 @@ function state_play:keypressed(key)
 	if key == " " then
 		map.generate()
 	end
-	inventory.kpressed(key)
+	inventory.kpressed(key) --after calling this it automatically goes to player.kpressed
 end
 
 function state_play:mousepressed(x, y, key)
-	inventory.mpressed(key, x, y)
+	inventory.mpressed(key, x, y) --after calling this it automatically goes to player.mpressed
 end

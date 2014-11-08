@@ -66,6 +66,11 @@ function camera:getPosition()
 	return self.x, self.y
 end
 
+function camera:getScale()
+    return self.scale, self.scale2
+
+end 
+
 function camera:rotate(phi)
 	self.rotation = self.rotation + phi
 	return self
@@ -295,7 +300,7 @@ function camera:getWorldCoords(x,y)
 end
 
 function camera:getMousePosition()
-	return self:worldCoords(love.mouse.getPosition())
+	return self:getWorldCoords(love.mouse.getPosition())
 end
 
 -- the module

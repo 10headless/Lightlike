@@ -7,7 +7,7 @@ equipped = 1
 local fonty = lg.newFont(12)
 
 function inventory.load()
-	table.insert(equip, {item_name = "AK-47", item_id = 1, weapon = true, wAtr = {}})
+	table.insert(equip, {item_name = "AK-47", item_id = 1, weapon = true, wAtr = {dmg = 10, acc = math.pi/15, ammo = 30, maxAmmo = 30, ammoWithMe = 60, bullTime = 0.1, maxBullTime = 0.1}})
 end
 
 function inventory.draw()
@@ -58,6 +58,8 @@ function inventory.mpressed(key, X, Y)
 					equipped = i
 				end
 			end	
+		else
+			player.mpressed(key, X, Y)
 		end
 	end
 end
@@ -65,8 +67,9 @@ end
 function inventory.kpressed(key)
 	if key == "1" or key == "2" or key == "3" or key == "4" or key == "5" or key == "6" or key == "7" or key == "8" or key == "9" then
 		equipped = (key*1000)/1000
-	end
-	if key == "0" then
+	elseif key == "0" then
 		equipped = 10
+	else
+		player.kpressed(key)
 	end
 end
