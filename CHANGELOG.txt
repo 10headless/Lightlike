@@ -1,3 +1,6 @@
+***Alpha v0.3c***
+-slowly working on enemy AI (not really a lot you can see right now)
+-optimization for A* lib
 ***Alpha v0.3b***
 -better reloading system (actually takes into consideration what's in the weapon
 ***Alpha v0.3a***

@@ -10,6 +10,7 @@ require "player"
 require "inventory"
 require "lib/camera2"
 require "bullet"
+require "enemy"
 PROBE = require 'PROBE'
 
 -- Profiler for drawing operations (set up in love.load()) with a sliding
@@ -58,6 +59,7 @@ function state_play:update(dt)
 	flux.update(dt)
 	player.update(dt)
 	bullet.update(dt)
+	enemy.update(dt)
 	uProbe:endCycle()
 end
 
@@ -67,6 +69,7 @@ function state_play:draw()
 	map.draw()
 	bullet.draw()
 	player.draw()
+	enemy.draw()
 	camera:detach()
 	cam2:set()
 	inventory.draw()

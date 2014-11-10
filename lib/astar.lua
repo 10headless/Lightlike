@@ -10,26 +10,25 @@ end
 function as.findPath(startx, starty, endx, endy)
 	local olist = {}
 	local clist = {}
+	local m = as.map
+
 	table.insert(clist, {x = startx, y = starty, g=0, parent = nil})
-	as.map[startx][starty].closedListed = true
 	local lastChosen = {x = startx, y = starty, g = 0}
 	repeat
 
-		if as.map[lastChosen.x-1][lastChosen.y].closedListed == nil and not checkIfObst(as.map[lastChosen.x-1][lastChosen.y].char) and as.map[lastChosen.x-1][lastChosen.y].openListed == nil then
+		if not isListed({x = lastChosen.x-1, y = lastChosen.y}, clist) and 
+			not checkIfObst(m[lastChosen.x-1][lastChosen.y].char) and 
+			not isListed({x = lastChosen.x-1, y = lastChosen.y}, olist) then
 			table.insert(olist, {x = lastChosen.x-1, y = lastChosen.y, parent = {x = lastChosen.x, y = lastChosen.y}})
-			as.map[lastChosen.x-1][lastChosen.y].openListed = true
 		end
-		if as.map[lastChosen.x+1][lastChosen.y].closedListed == nil and not checkIfObst(as.map[lastChosen.x+1][lastChosen.y].char) and as.map[lastChosen.x+1][lastChosen.y].openListed == nil then
+		if not isListed({x = lastChosen.x+1, y = lastChosen.y}, clist) and not checkIfObst(m[lastChosen.x+1][lastChosen.y].char) and not isListed({x = lastChosen.x+1, y = lastChosen.y}, olist) then
 			table.insert(olist, {x = lastChosen.x+1, y = lastChosen.y, parent = {x = lastChosen.x, y = lastChosen.y}})
-			as.map[lastChosen.x+1][lastChosen.y].openListed = true
 		end
-		if as.map[lastChosen.x][lastChosen.y+1].closedListed == nil and not checkIfObst(as.map[lastChosen.x][lastChosen.y+1].char) and as.map[lastChosen.x][lastChosen.y+1].openListed == nil then
+		if not isListed({x = lastChosen.x, y = lastChosen.y+1}, clist) and not checkIfObst(m[lastChosen.x][lastChosen.y+1].char) and not isListed({x = lastChosen.x, y = lastChosen.y+1}, olist) then
 			table.insert(olist, {x = lastChosen.x, y = lastChosen.y+1, parent = {x = lastChosen.x, y = lastChosen.y}})
-			as.map[lastChosen.x][lastChosen.y+1].openListed = true
 		end
-		if as.map[lastChosen.x][lastChosen.y-1].closedListed == nil and not checkIfObst(as.map[lastChosen.x][lastChosen.y-1].char) and as.map[lastChosen.x][lastChosen.y-1].openListed == nil then
+		if not isListed({x = lastChosen.x, y = lastChosen.y-1}, clist) and not checkIfObst(m[lastChosen.x][lastChosen.y-1].char) and not isListed({x = lastChosen.x, y = lastChosen.y-1}, olist) then
 			table.insert(olist, {x = lastChosen.x, y = lastChosen.y-1, parent = {x = lastChosen.x, y = lastChosen.y}})
-			as.map[lastChosen.x][lastChosen.y-1].openListed = true
 		end
 		local smallest = {value = 1000, id = 1}
 		for i, v in ipairs(olist) do
@@ -52,7 +51,6 @@ function as.findPath(startx, starty, endx, endy)
 			lastChosen = deepcopy(olist[smallest.id])
 			table.remove(olist, smallest.id)
 			table.insert(clist, lastChosen)
-			as.map[lastChosen.x][lastChosen.y].closedListed = true
 			
 			local path = {}
 			local tmpStep = clist[#clist]
@@ -79,7 +77,6 @@ function as.findPath(startx, starty, endx, endy)
 			lastChosen = deepcopy(olist[smallest.id])
 			table.remove(olist, smallest.id)
 			table.insert(clist, lastChosen)
-			as.map[lastChosen.x][lastChosen.y].closedListed = true
 		end
 	end
 		
@@ -114,12 +111,21 @@ function deepcopy(orig)
 end
 
 function cleanUpMap()
-	for i, v in ipairs(as.map) do
+	--[[for i, v in ipairs(as.map) do
 		for j, b in ipairs(v) do
 			as.map[i][j].closedListed = nil
 			as.map[i][j].openListed = nil
 		end
+	end]]--
+end
+
+function isListed(pos, cl)
+	for i, v in ipairs(cl) do
+		if v.x == pos.x and v.y == pos.y then
+			return true
+		end
 	end
+	return false
 end
 
 return as
