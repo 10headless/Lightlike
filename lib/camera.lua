@@ -92,7 +92,7 @@ function camera:zoomTo(zoom)
 end
 
 function camera:attach()
-	local cx,cy = love.graphics.getWidth()/(2*self.scale), love.graphics.getHeight()/(2*self.scale)
+	local cx,cy = love.graphics.getWidth()/(2*self.scale), love.graphics.getHeight()/(2*self.scale2)
 	love.graphics.push()
 	love.graphics.scale(self.scale, self.scale2)
 	love.graphics.translate(cx, cy)

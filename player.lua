@@ -19,6 +19,9 @@ function player.load(X, Y)
 	player.friction = 6
 	player.tx = 1
 	player.ty = 1
+	player.steps = {}
+	player.stepT = 1
+	player.maxstepT = 1
 	cWorld:add(player, player.x, player.y, player.w, player.h)
 	inventory.load()
 end
@@ -26,6 +29,17 @@ end
 function player.draw()
 	lg.setColor(0, 255, 0)
 	lg.rectangle("fill", player.x, player.y, player.w, player.h)
+	local remSteps = {}
+	for i, v in ipairs(player.steps) do
+		lg.setColor(200, 200, 200, v.a)
+		lg.circle("line", v.x, v.y, v.w)
+		if v.a == 0 then
+			table.insert(remSteps, i)
+		end	
+	end
+	for i, v in ipairs(remSteps) do
+		table.remove(player.steps, v)
+	end
 end
 
 
@@ -78,7 +92,15 @@ function player.update(dt)
 		player.yvel = player.yvel * (1 - math.min(dt*player.friction, 1))
 	end
 	cWorld:move(player, player.x, player.y, player.w, player.h)
-
+	if player.xvel < -5 or player.xvel > 5 or player.yvel > 5 and player.yvel < -5 then
+		player.stepT = player.stepT + dt
+		if player.stepT >= player.maxstepT then
+			player.step()
+			player.stepT = 0
+		end
+	else
+		player.stepT = player.maxstepT
+	end
 
 	if love.mouse.isDown("l") then
 		if equip[equipped].weapon then
@@ -152,4 +174,11 @@ function player.kpressed(key)
 			end
 		end
 	end	
+end
+
+
+
+function player.step()
+	table.insert(player.steps, {x = player.x+player.w/2, y = player.y+player.h/2, w = 0, a = 255, max = 100})
+	flux.to(player.steps[#player.steps], 0.4, {w = player.steps[#player.steps].max}):after(player.steps[#player.steps], 0.2, {a = 0})
 end

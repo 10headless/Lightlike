@@ -12,6 +12,25 @@ require "lib/camera2"
 require "bullet"
 require "enemy"
 PROBE = require 'PROBE'
+local LightWorld = require "lib/light/light_world" --the path to where light_world is (in this repo "lib")
+
+
+function drawBackground()
+	map.draw()
+end
+
+function drawForeground()
+	bullet.draw()
+	player.draw()
+	enemy.draw()
+end
+
+
+lightWorld = LightWorld({
+  drawBackground = drawBackground, --the callback to use for drawing the background
+  drawForeground = drawForeground, --the callback to use for drawing the foreground
+  ambient = {55,55,55},         --the general ambient light in the environment
+})
 
 -- Profiler for drawing operations (set up in love.load()) with a sliding
 -- window size of 60 cycles. Too few cycles and the visualization will be too
@@ -47,10 +66,12 @@ function state_play:enter()
 			end
 		end
 	end
+	player.x = 1000
+	player.y = 1000
+	lightMouse = lightWorld:newLight(player.x, player.y, 255, 127, 63, 500)
 	for i, v in ipairs(coll) do
 		cWorld:add(v, v.x, v.y, v.w, v.h)
 	end	
-
 end
 
 function state_play:update(dt)
@@ -66,11 +87,12 @@ end
 function state_play:draw()
 	dProbe:startCycle()
 	camera:attach()
-	map.draw()
-	bullet.draw()
+	local cx,cy = love.graphics.getWidth()/(2*camera.scale), love.graphics.getHeight()/(2*camera.scale2)
+	lightWorld:draw(cx, cy, camera.scale)
+
 	player.draw()
-	enemy.draw()
 	camera:detach()
+
 	cam2:set()
 	inventory.draw()
 	cam2:unset()
@@ -80,6 +102,11 @@ function state_play:draw()
 	dProbe:draw(20, 20, 150, 560, "DRAW CYCLE")
 	uProbe:draw(630, 20, 150, 560, "UPDATE CYCLE")
 end
+
+
+
+
+
 
 function state_play:keypressed(key)
 	if key == " " then
