@@ -9,28 +9,13 @@ require "map"
 require "player"
 require "inventory"
 require "lib/camera2"
+require "lib/camera3"
 require "bullet"
 require "enemy"
 PROBE = require 'PROBE'
-local LightWorld = require "lib/light/light_world" --the path to where light_world is (in this repo "lib")
+local ray = require "lib/raylight"
 
 
-function drawBackground()
-	map.draw()
-end
-
-function drawForeground()
-	bullet.draw()
-	player.draw()
-	enemy.draw()
-end
-
-
-lightWorld = LightWorld({
-  drawBackground = drawBackground, --the callback to use for drawing the background
-  drawForeground = drawForeground, --the callback to use for drawing the foreground
-  ambient = {55,55,55},         --the general ambient light in the environment
-})
 
 -- Profiler for drawing operations (set up in love.load()) with a sliding
 -- window size of 60 cycles. Too few cycles and the visualization will be too
@@ -51,12 +36,10 @@ dProbe:hookAll(_G, 'draw', {love})
 cWorld = nil
 camera = {}
 coll = {}
-local empty = {x = 0, y = 0}
 
 function state_play:enter()
-	empty = {x = 20, y = 20}
 	cWorld = bump.newWorld(32)
-	camera = Camera({follow_style = 'topdown', target = player, bounds = {left = 0, top = 0, right = blockSize*mapWidth, down = blockSize*mapHeight}, zoom = 2*1280/love.window.getWidth(), zoom2 = 2*720/love.window.getHeight()})
+	cam:setScale(640/love.window.getWidth(), 360/love.window.getHeight())
 	cam2:setScale(854/love.window.getWidth(), 480/love.window.getHeight())
 	map.generate()
 	for i, v in ipairs(curMap) do
@@ -66,33 +49,35 @@ function state_play:enter()
 			end
 		end
 	end
-	player.x = 1000
-	player.y = 1000
-	lightMouse = lightWorld:newLight(player.x, player.y, 255, 127, 63, 500)
+
 	for i, v in ipairs(coll) do
 		cWorld:add(v, v.x, v.y, v.w, v.h)
 	end	
+	ray.loadMap(coll)
 end
 
 function state_play:update(dt)
 	uProbe:startCycle()
-	camera:update(dt)
 	flux.update(dt)
 	player.update(dt)
 	bullet.update(dt)
 	enemy.update(dt)
+
+	cam.x, cam.y = player.x-(love.window.getWidth()*cam.scaleX)/2, player.y-(love.window.getHeight()*cam.scaleY)/2
 	uProbe:endCycle()
 end
 
 function state_play:draw()
 	dProbe:startCycle()
-	camera:attach()
-	local cx,cy = love.graphics.getWidth()/(2*camera.scale), love.graphics.getHeight()/(2*camera.scale2)
-	lightWorld:draw(cx, cy, camera.scale)
-
+	cam:set()
+	map.draw()
+	lg.setColor(255,255,255)
+	ray.castRays(player.x+player.w/2, player.y+player.h/2, player.tx, player.ty)
 	player.draw()
-	camera:detach()
-
+	bullet.draw()
+	enemy.draw()
+	cam:unset()
+	love.graphics.setBlendMode("alpha")
 	cam2:set()
 	inventory.draw()
 	cam2:unset()
@@ -102,11 +87,6 @@ function state_play:draw()
 	dProbe:draw(20, 20, 150, 560, "DRAW CYCLE")
 	uProbe:draw(630, 20, 150, 560, "UPDATE CYCLE")
 end
-
-
-
-
-
 
 function state_play:keypressed(key)
 	if key == " " then

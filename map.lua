@@ -31,7 +31,7 @@ function map.draw()
 						lg.rectangle("fill", blockSize*(i-1), blockSize*(j-1), blockSize, blockSize)
 					end
 					if b.char == 1 then
-						lg.setColor(255, 255, 255)
+						lg.setColor(0, 0, 0)
 						lg.rectangle("fill", blockSize*(i-1), blockSize*(j-1), blockSize, blockSize)
 					end
 				end

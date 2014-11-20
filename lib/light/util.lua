@@ -33,7 +33,9 @@ function util.drawto(canvas, x, y, scale, cb)
   love.graphics.push()
     love.graphics.origin()
     love.graphics.setCanvas(canvas)
+
       love.graphics.translate(x, y)
+      
       love.graphics.scale(scale)
       cb()
     love.graphics.setCanvas(last_buffer)
