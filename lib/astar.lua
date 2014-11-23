@@ -1,10 +1,15 @@
 local as = {}
 as.map = {}
 as.obst = {}
+as.rooms = {}
 
 function as.loadMap(map, obst)
 	as.map = deepcopy(map)
 	as.obst = obst
+end
+
+function as.loadRooms(r)
+	as.rooms = deepcopy(r)
 end
 
 function as.findPath(startx, starty, endx, endy)
@@ -84,6 +89,11 @@ function as.findPath(startx, starty, endx, endy)
 cleanUpMap()
 	return nil
 end
+
+
+
+
+
 
 
 function checkIfObst(char)

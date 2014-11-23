@@ -35,10 +35,10 @@ function enemy.redo()
 end
 
 
-local cr = cron.every(0.5, enemy.redo)
+local cr = cron.every(0.4, enemy.redo)
 
 function enemy.load(x, y, w, h)
-	table.insert(enemies, {x = x, y = y, w = w, h = h, ai = {state = "random", dir = nil, path = nil, lastDir = nil}, typ = "enemy", xvel = 0, yvel = 0, speed = 80, ranSpeed = 30})
+	table.insert(enemies, {x = x, y = y, w = w, h = h, ai = {state = "random", dir = nil, path = nil, lastDir = nil, lookDis = 160, seeTime = 0, maxSeeTime = 1.5}, typ = "enemy", xvel = 0, yvel = 0, speed = 80, ranSpeed = 30})
 	cWorld:add(enemies[#enemies], x, y, w, h)
 	astar.loadMap(curMap, {2})
 end
@@ -161,20 +161,50 @@ function enemy.AI(dt)
 					v.ai.dir = "d"
 				end
 			end
+
+
+			local see = false
+			if math.sqrt(math.abs(v.x-player.x)^2+math.abs(v.y-player.y)^2) < v.ai.lookDis then
+				local etx = math.floor((v.x+v.h/2)/32)+1
+				local ety = math.floor((v.y+v.w/2)/32)+1
+				for i, v in ipairs(curMap) do
+					if player.tx-15 < i and i < player.tx+15 then
+						for j, b in ipairs(v) do
+							if player.ty-15 < j and j < player.ty+15 then
+								if b.char == 2 then
+									if not checkIntersect({x = (etx-1)*blockSize, y = (ety-1)*blockSize}, {x = (player.tx-1)*blockSize, y = (player.ty-1)*blockSize}, {x = (i-1)*blockSize, y = (j-1)*blockSize+blockSize/2}, {x = i*blockSize, y = (j-1)*blockSize+blockSize/2}) or
+										not checkIntersect({x = (etx-1)*blockSize, y = (ety-1)*blockSize}, {x = (player.tx-1)*blockSize, y = (player.ty-1)*blockSize}, {x = (i-1)*blockSize+blockSize/2, y = (j-1)*blockSize}, {x = (i-1)*blockSize+blockSize/2, y = j*blockSize}) then
+										see = true
+									end
+								end
+							end	
+						end
+					end
+				end
+			end
+			if see then
+				v.ai.seeTime = v.ai.seeTime + dt
+				if v.ai.seeTime >= v.ai.maxSeeTime then
+					v.ai.seeTime = 0
+					v.ai.state = "chasing"
+				end
+			else
+				v.ai.seeTime = 0
+			end
 		end
 		if v.ai.state == "chasing" then
 			local etx = math.floor((v.x+v.h/2)/32)+1
 			local ety = math.floor((v.y+v.w/2)/32)+1
 			if v.ai.path ~= nil then
-				if player.tx > v.ai.path[1].x then
-					v.xvel = v.speed
-				else
+				if v.x+v.w/2 > (v.ai.path[2].x-0.5)*blockSize then
 					v.xvel = -v.speed
-				end
-				if player.ty > v.ai.path[1].y then
-					v.yvel = v.speed
 				else
+					v.xvel = v.speed
+				end
+				if v.y+v.h/2 > (v.ai.path[2].y-0.5)*blockSize then
 					v.yvel = -v.speed
+				else
+					v.yvel = v.speed
 				end
 			else
 				if player.tx > etx then
@@ -189,7 +219,9 @@ function enemy.AI(dt)
 				end
 			end
 		end
-		
+		if v.ai.state == "lookforplayer" then
+
+		end
 	end
 end
 

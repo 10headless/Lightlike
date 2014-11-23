@@ -92,7 +92,7 @@ function player.update(dt)
 		player.yvel = player.yvel * (1 - math.min(dt*player.friction, 1))
 	end
 	cWorld:move(player, player.x, player.y, player.w, player.h)
-	if player.xvel < -5 or player.xvel > 5 or player.yvel > 5 and player.yvel < -5 then
+	if not (player.xvel > -5 and player.xvel < 5) or not (player.yvel > -5 and player.yvel < 5) then
 		player.stepT = player.stepT + dt
 		if player.stepT >= player.maxstepT then
 			player.step()
@@ -106,7 +106,7 @@ function player.update(dt)
 		if equip[equipped].weapon then
 			if equip[equipped].wAtr.ammo > 0 then
 				if equip[equipped].wAtr.bullTime >= equip[equipped].wAtr.maxBullTime then
-					local miwX, miwY = camera:getMousePosition()
+					local miwX, miwY = love.mouse.getX()+cam.x, love.mouse.getY()+cam.y
 					local difX = miwX-player.x
 					local difY = miwY-player.y
 					local r = love.math.random(1, 3)-2
@@ -122,6 +122,9 @@ function player.update(dt)
 					end
 
 					bullet.load(player.x, player.y, xv2, yv)
+					table.insert(player.steps, {x = player.x+player.w/2, y = player.y+player.h/2, w = 0, a = 255, max = 150})
+					flux.to(player.steps[#player.steps], 0.3*(player.steps[#player.steps].max/100), {w = player.steps[#player.steps].max}):after(player.steps[#player.steps], 0.2, {a = 0})
+
 					equip[equipped].wAtr.bullTime = 0
 					equip[equipped].wAtr.ammo = equip[equipped].wAtr.ammo - 1
 				else
@@ -139,7 +142,7 @@ function player.update(dt)
 end
 
 function player.mpressed(key, X, Y)
-	local cax, cay = camera:getScale()
+	local cax, cay = cam.scaleX, cam.scaleY
 	local x = X/cax
 	local y = Y/cay
 	if key == "l" then
@@ -179,6 +182,6 @@ end
 
 
 function player.step()
-	table.insert(player.steps, {x = player.x+player.w/2, y = player.y+player.h/2, w = 0, a = 255, max = 100})
-	flux.to(player.steps[#player.steps], 0.4, {w = player.steps[#player.steps].max}):after(player.steps[#player.steps], 0.2, {a = 0})
+	table.insert(player.steps, {x = player.x+player.w/2, y = player.y+player.h/2, w = 0, a = 255, max = 80})
+	flux.to(player.steps[#player.steps], 0.3*(player.steps[#player.steps].max/100), {w = player.steps[#player.steps].max}):after(player.steps[#player.steps], 0.2, {a = 0})
 end

@@ -13,7 +13,6 @@ require "lib/camera3"
 require "bullet"
 require "enemy"
 PROBE = require 'PROBE'
-local ray = require "lib/raylight"
 
 
 
@@ -53,7 +52,6 @@ function state_play:enter()
 	for i, v in ipairs(coll) do
 		cWorld:add(v, v.x, v.y, v.w, v.h)
 	end	
-	ray.loadMap(coll)
 end
 
 function state_play:update(dt)
@@ -71,8 +69,6 @@ function state_play:draw()
 	dProbe:startCycle()
 	cam:set()
 	map.draw()
-	lg.setColor(255,255,255)
-	ray.castRays(player.x+player.w/2, player.y+player.h/2, player.tx, player.ty)
 	player.draw()
 	bullet.draw()
 	enemy.draw()

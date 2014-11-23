@@ -8,9 +8,9 @@ curMap = {}
 rooms = {}
 walkable = 1
 
-mapWidth = 100
-mapHeight = 100
-howManyRooms = 28
+mapWidth = 80
+mapHeight = 80
+howManyRooms = 25
 roomMaxHeight = 15
 roomMaxWidth = 15
 blockSize = 32
@@ -188,7 +188,7 @@ function map.generate()
 	until rand_player ~= rand_end
 
 	player.load(blockSize*(rooms[rand_player].cx-1), blockSize*(rooms[rand_player].cy-1))
-	enemy.load(blockSize*(rooms[rand_player].cx+1), blockSize*(rooms[rand_player].cy+1), blockSize, blockSize)
+	enemy.load(blockSize*(rooms[rand_player].cx+1), blockSize*(rooms[rand_player].cy+1), blockSize-5, blockSize-5)
 end
 
 
